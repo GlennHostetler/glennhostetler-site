@@ -28,7 +28,7 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       DEPLOY_NAME: deploy-dev-${{ github.run_number }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # The three Azure IDs are stored as secrets (not variables) so GitHub masks them in public logs.
       - uses: azure/login@v3
@@ -70,7 +70,7 @@ jobs:
       IMAGE_TAG: ${{ github.sha }}
       DEPLOY_NAME: deploy-prod-${{ github.run_number }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: azure/login@v3
         with:

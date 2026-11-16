@@ -4,7 +4,7 @@
 
 # ---------- Stage 1: build ----------
 # The .NET SDK image has the compiler and publish tooling. It is big, and it is thrown away at the end.
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 
 # Copy only the project file first and restore packages. Docker caches each step, so as long as the

@@ -1,0 +1,13 @@
+# Files Docker should NOT copy into the build. Keeps the build fast and the image clean.
+bin/
+obj/
+.vs/
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/.git/
+Dockerfile*
+.dockerignore
+charts/
+release.json

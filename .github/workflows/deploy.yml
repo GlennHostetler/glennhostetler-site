@@ -1,0 +1,111 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'GlennSite/**'
+      - 'infra/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+# Least privilege: the workflow can read the repo and ask GitHub for an OIDC token, nothing else.
+permissions:
+  id-token: write
+  contents: read
+
+# Never run two deployments at once; queue the second behind the first.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    environment: dev
+    env:
+      RG: rg-glennsite-dev
+      IMAGE_TAG: ${{ github.sha }}
+      DEPLOY_NAME: deploy-dev-${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # The three Azure IDs are stored as secrets (not variables) so GitHub masks them in public logs.
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Find the dev registry
+        run: echo "ACR=$(az acr list --resource-group "$RG" --query '[0].name' --output tsv)" >> "$GITHUB_ENV"
+
+      - name: Build the image in Azure Container Registry
+        run: az acr build --registry "$ACR" --image "glennsite:${IMAGE_TAG}" ./GlennSite
+
+      # --output none: do not print the deployment's JSON summary (it contains resource IDs) into the log.
+      - name: Deploy infrastructure and app with Bicep
+        run: |
+          export IMAGE="${ACR}.azurecr.io/glennsite:${IMAGE_TAG}"
+          export TARGET_PORT=8080
+          az deployment group create \
+            --resource-group "$RG" \
+            --name "$DEPLOY_NAME" \
+            --parameters infra/dev.bicepparam \
+            --output none
+
+      - name: Smoke test
+        run: |
+          URL=$(az deployment group show --resource-group "$RG" --name "$DEPLOY_NAME" --query properties.outputs.appUrl.value --output tsv)
+          echo "Testing $URL"
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors "$URL" > /dev/null
+
+  prod:
+    needs: dev                 # only starts after dev succeeded
+    runs-on: ubuntu-latest
+    environment: prod          # required reviewers on this environment pause the run here
+    env:
+      DEV_RG: rg-glennsite-dev
+      RG: rg-glennsite-prod
+      IMAGE_TAG: ${{ github.sha }}
+      DEPLOY_NAME: deploy-prod-${{ github.run_number }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Find the registries
+        run: |
+          echo "DEV_ACR_ID=$(az acr list --resource-group "$DEV_RG" --query '[0].id' --output tsv)" >> "$GITHUB_ENV"
+          echo "PROD_ACR=$(az acr list --resource-group "$RG" --query '[0].name' --output tsv)" >> "$GITHUB_ENV"
+
+      # Build once, promote the same image: copy it from the dev registry to the prod registry.
+      - name: Promote the same image from dev to prod
+        run: |
+          az acr import \
+            --name "$PROD_ACR" \
+            --registry "$DEV_ACR_ID" \
+            --source "glennsite:${IMAGE_TAG}" \
+            --image "glennsite:${IMAGE_TAG}" \
+            --force \
+            --output none
+
+      - name: Deploy infrastructure and app with Bicep
+        run: |
+          export IMAGE="${PROD_ACR}.azurecr.io/glennsite:${IMAGE_TAG}"
+          export TARGET_PORT=8080
+          az deployment group create \
+            --resource-group "$RG" \
+            --name "$DEPLOY_NAME" \
+            --parameters infra/prod.bicepparam \
+            --output none
+
+      - name: Smoke test
+        run: |
+          URL=$(az deployment group show --resource-group "$RG" --name "$DEPLOY_NAME" --query properties.outputs.appUrl.value --output tsv)
+          echo "Testing $URL"
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 --retry-all-errors "$URL" > /dev/null

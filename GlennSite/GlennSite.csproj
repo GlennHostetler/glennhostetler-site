@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <UserSecretsId>51f88709-271d-4ceb-87a8-d1452e1f5d47</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+
+  </ItemGroup>
+
+  <!-- The resume files are maintained in ..\Resume; copy the published ones into wwwroot\files on build. -->
+  <Target Name="CopyResumeFiles" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\Resume')">
+    <ItemGroup>
+      <ResumeFile Include="$(MSBuildProjectDirectory)\..\Resume\Glenn_Hostetler_Resume_Designed.pdf;$(MSBuildProjectDirectory)\..\Resume\Glenn_Hostetler_Resume_ATS.docx" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ResumeFile)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\files" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

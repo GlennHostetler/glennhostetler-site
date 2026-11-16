@@ -1,0 +1,20 @@
+# Dependabot opens pull requests when a dependency has a newer version or a security fix.
+version: 2
+updates:
+  # The GitHub Actions used by the pipeline (checkout, azure/login)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  # NuGet packages for the ASP.NET Core site
+  - package-ecosystem: nuget
+    directory: /GlennSite
+    schedule:
+      interval: weekly
+
+  # Base images in the Dockerfile (.NET SDK and runtime)
+  - package-ecosystem: docker
+    directory: /GlennSite
+    schedule:
+      interval: weekly

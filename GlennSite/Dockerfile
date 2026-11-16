@@ -23,7 +23,7 @@ RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 # ---------- Stage 2: run ----------
 # The ASP.NET runtime image is small: just enough to run the published site.
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS final
 WORKDIR /app
 
 # Bring in the published output from the build stage; nothing else comes along.

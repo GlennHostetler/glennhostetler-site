@@ -12,7 +12,19 @@ param image string = 'mcr.microsoft.com/k8se/quickstart:latest'
 @description('Port the container listens on. 80 for the sample, 8080 for our site.')
 param targetPort int = 80
 
+@description('Custom domain for this environment (for example glennhostetler.com), or empty for none.')
+param customDomain string = ''
+
+@description('Two-step switch. false: add the hostname unbound so Azure can issue its free certificate. true: bind the hostname to that certificate. Set true only after the certificate shows Succeeded.')
+param bindCustomDomain bool = false
+
 var suffix = uniqueString(resourceGroup().id)
+
+// Name of the free managed certificate, and its resource ID (built as text so the app can refer to
+// it without creating a circular dependency: the certificate can only be requested after the app
+// already has the hostname, and the bound hostname needs the certificate).
+var certName = 'cert-${replace(customDomain, '.', '-')}'
+var certId = resourceId('Microsoft.App/managedEnvironments/managedCertificates', 'cae-${workload}-${environmentName}', certName)
 var registryName = 'acr${workload}${suffix}'
 
 // Built-in Azure role: "AcrPull" (can pull images, nothing else).
@@ -89,6 +101,13 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
       ingress: {
         external: true
         targetPort: targetPort
+        customDomains: empty(customDomain) ? [] : [
+          {
+            name: customDomain
+            bindingType: bindCustomDomain ? 'SniEnabled' : 'Disabled'
+            certificateId: bindCustomDomain ? certId : null
+          }
+        ]
       }
       registries: [
         {
@@ -116,6 +135,22 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
   }
   dependsOn: [
     acrPull
+  ]
+}
+
+// ---------- Free managed certificate for the custom domain ----------
+// Requires DNS to be in place: an A record for the domain pointing at the environment's static IP,
+// and an "asuid" TXT record holding the environment's verification code.
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' = if (!empty(customDomain)) {
+  parent: environment
+  name: certName
+  location: location
+  properties: {
+    subjectName: customDomain
+    domainControlValidation: 'HTTP'
+  }
+  dependsOn: [
+    app
   ]
 }
 

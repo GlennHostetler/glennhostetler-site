@@ -18,3 +18,8 @@ updates:
     directory: /GlennSite
     schedule:
       interval: weekly
+    # The site targets .NET 10 (LTS). Moving to a new .NET major version means retargeting
+    # GlennSite.csproj and both images together, so it is done on purpose, not by a routine bump.
+    ignore:
+      - dependency-name: "dotnet/*"
+        update-types: ["version-update:semver-major"]

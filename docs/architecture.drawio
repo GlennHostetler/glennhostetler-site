@@ -1,0 +1,178 @@
+<mxfile host="app.diagrams.net" agent="Claude Code" version="24.0.0">
+  <diagram id="glennsite-arch" name="Hosting architecture">
+    <mxGraphModel dx="1800" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1950" pageHeight="1020" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="&lt;b&gt;glennhostetler.com: hosting architecture&lt;/b&gt;&lt;br&gt;Azure Container Apps, Bicep, and GitHub Actions with OIDC (no stored passwords). Solid = deployed, dashed = planned." style="text;html=1;align=left;verticalAlign=top;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="8" width="900" height="44" as="geometry" />
+        </mxCell>
+
+        <mxCell id="u1" value="Glenn (developer)" style="image;aspect=fixed;html=1;points=[];fontSize=11;image=img/lib/azure2/identity/Users.svg;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="158" y="84" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gh" value="GitHub repository (public)&lt;br&gt;main is protected: changes arrive by pull request" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#24292F;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="230" width="300" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="gh_site" value="Site&lt;br&gt;(GlennSite/ + Dockerfile)" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/general/Code.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="gh">
+          <mxGeometry x="40" y="60" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="gh_bicep" value="Bicep (infra/)&lt;br&gt;one template,&lt;br&gt;dev and prod parameters" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/general/Templates.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="gh">
+          <mxGeometry x="190" y="60" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="act" value="GitHub Actions: deploy.yml&lt;br&gt;runs on every merge to main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#24292F;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="470" width="300" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="act_icon" value="Build, then deploy&lt;br&gt;dev, then prod" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/general/Builds.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="act">
+          <mxGeometry x="118" y="50" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="act_dev" value="Environment: dev&lt;br&gt;deploys automatically" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;" vertex="1" parent="act">
+          <mxGeometry x="20" y="170" width="125" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act_prod" value="Environment: prod&lt;br&gt;waits for a reviewer to approve" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;" vertex="1" parent="act">
+          <mxGeometry x="160" y="170" width="125" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="act_note" value="Image is built once (tag = commit ID) and promoted, never rebuilt." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=10;fontStyle=2;" vertex="1" parent="act">
+          <mxGeometry x="20" y="240" width="265" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="entra" value="Entra ID app registration&lt;br&gt;github-glennsite&lt;br&gt;OIDC federated credentials:&lt;br&gt;this repo + dev / prod only" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/identity/App_Registrations.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="158" y="850" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="sub" value="Azure subscription&amp;nbsp;&amp;nbsp;(budget alert: $20 per month)" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#0078D4;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=13;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="60" width="1190" height="860" as="geometry" />
+        </mxCell>
+        <mxCell id="budget" value="Budget" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=10;image=img/lib/azure2/general/Cost_Budgets.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="sub">
+          <mxGeometry x="1130" y="8" width="36" height="36" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rgdev" value="rg-glennsite-dev (Central US)" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#EAF3FB;strokeColor=#0078D4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=12;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="sub">
+          <mxGeometry x="30" y="60" width="540" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="caeDev" value="Container Apps environment&lt;br&gt;cae-glennsite-dev" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;container=1;collapsible=0;" vertex="1" parent="rgdev">
+          <mxGeometry x="20" y="50" width="500" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="appDev" value="Container App&lt;br&gt;ca-glennsite-dev&lt;br&gt;0 to 2 replicas, port 8080" style="image;aspect=fixed;html=1;points=[];fontSize=11;image=img/lib/azure2/other/Worker_Container_App.svg;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;" vertex="1" parent="caeDev">
+          <mxGeometry x="278" y="70" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="logDev" value="Log Analytics workspace&lt;br&gt;log-glennsite-dev" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/management_governance/Log_Analytics_Workspaces.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgdev">
+          <mxGeometry x="438" y="310" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="idDev" value="Managed identity&lt;br&gt;id-glennsite-dev" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/identity/Managed_Identities.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgdev">
+          <mxGeometry x="40" y="440" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="acrDev" value="Container Registry (Basic)&lt;br&gt;dev copy of the image" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/containers/Container_Registries.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgdev">
+          <mxGeometry x="298" y="440" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="rgprod" value="rg-glennsite-prod (West US 3)" style="rounded=1;arcSize=3;whiteSpace=wrap;html=1;fillColor=#EAF3FB;strokeColor=#0078D4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=12;fontStyle=1;container=1;collapsible=0;" vertex="1" parent="sub">
+          <mxGeometry x="620" y="60" width="540" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="caeProd" value="Container Apps environment&lt;br&gt;cae-glennsite-prod" style="rounded=1;arcSize=5;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#0078D4;verticalAlign=top;align=left;spacingLeft=10;spacingTop=4;fontSize=11;container=1;collapsible=0;" vertex="1" parent="rgprod">
+          <mxGeometry x="20" y="50" width="500" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="appProd" value="Container App&lt;br&gt;ca-glennsite-prod&lt;br&gt;0 to 2 replicas, port 8080" style="image;aspect=fixed;html=1;points=[];fontSize=11;image=img/lib/azure2/other/Worker_Container_App.svg;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;" vertex="1" parent="caeProd">
+          <mxGeometry x="278" y="70" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="logProd" value="Log Analytics workspace&lt;br&gt;log-glennsite-prod" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/management_governance/Log_Analytics_Workspaces.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgprod">
+          <mxGeometry x="38" y="310" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="acrProd" value="Container Registry (Basic)&lt;br&gt;prod copy of the image" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/containers/Container_Registries.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgprod">
+          <mxGeometry x="298" y="440" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="idProd" value="Managed identity&lt;br&gt;id-glennsite-prod" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/identity/Managed_Identities.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="rgprod">
+          <mxGeometry x="450" y="440" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="planned" value="Planned" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;dashed=1;verticalAlign=top;align=left;spacingLeft=10;fontSize=11;fontStyle=2;container=1;collapsible=0;" vertex="1" parent="rgprod">
+          <mxGeometry x="30" y="565" width="480" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ai" value="Application Insights&lt;br&gt;KQL dashboard" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/devops/Application_Insights.svg;verticalLabelPosition=bottom;verticalAlign=top;opacity=60;" vertex="1" parent="planned">
+          <mxGeometry x="100" y="25" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="kv" value="Key Vault&lt;br&gt;(only if a secret is ever needed)" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/security/Key_Vaults.svg;verticalLabelPosition=bottom;verticalAlign=top;opacity=60;" vertex="1" parent="planned">
+          <mxGeometry x="320" y="25" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <mxCell id="vis" value="Visitors" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/identity/Users.svg;verticalLabelPosition=top;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="1790" y="100" width="64" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="cf" value="Cloudflare DNS&lt;br&gt;glennhostetler.com&lt;br&gt;A record (DNS only, no proxy)&lt;br&gt;TXT record for ownership proof" style="image;aspect=fixed;html=1;points=[];align=center;fontSize=11;image=img/lib/azure2/general/Globe.svg;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1790" y="420" width="64" height="64" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" value="push, then PR" style="endArrow=classic;html=1;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="u1" target="gh">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="merge to main" style="endArrow=classic;html=1;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="gh" target="act">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="1. OIDC token&lt;br&gt;(no password)" style="endArrow=classic;html=1;strokeWidth=1.5;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;" edge="1" parent="1" source="act" target="entra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="2. short-lived access token" style="endArrow=classic;html=1;strokeWidth=1.5;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.9558;" edge="1" parent="1" source="entra" target="sub">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="3a. build image,&lt;br&gt;deploy to dev" style="endArrow=classic;html=1;strokeWidth=2;fontSize=10;strokeColor=#0078D4;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.1667;entryX=0;entryY=0.571;" edge="1" parent="1" source="act" target="rgdev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="3b. after approval: promote image and deploy to prod" style="endArrow=classic;html=1;strokeWidth=2;fontSize=10;strokeColor=#0078D4;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.8667;entryX=0.5;entryY=1;" edge="1" parent="1" source="act" target="rgprod">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="730" />
+              <mxPoint x="400" y="850" />
+              <mxPoint x="1370" y="850" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="d1" value="AcrPull role" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="idDev" target="acrDev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="pulls image" style="endArrow=classic;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="acrDev" target="appDev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="console logs" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=0.9;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="caeDev" target="logDev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="p1" value="AcrPull role" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="idProd" target="acrProd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="pulls image" style="endArrow=classic;html=1;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;entryX=0.5;entryY=1;" edge="1" parent="1" source="acrProd" target="appProd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="console logs" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=0.1;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="caeProd" target="logProd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="promote" value="image copied to prod&lt;br&gt;(az acr import, not rebuilt)" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#D79B00;fontSize=11;fontStyle=1;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="acrDev" target="acrProd">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="v1" value="1. name lookup" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="vis" target="cf">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="2. HTTPS, free&lt;br&gt;managed certificate" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#107C10;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.5;" edge="1" parent="1" source="vis" target="appProd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1560" y="132" />
+              <mxPoint x="1560" y="272" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v3" value="A record points at the&lt;br&gt;environment's static IP" style="endArrow=classic;html=1;fontSize=10;dashed=1;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=1;entryY=0.9;" edge="1" parent="1" source="cf" target="caeProd">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1720" y="452" />
+              <mxPoint x="1720" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>How this site is built | Glenn Hostetler</title>
-  <meta name="description" content="How Glenn Hostetler's site is built, and the plan to run it as a container on Azure with infrastructure as code, a build pipeline, and monitoring.">
+  <meta name="description" content="How Glenn Hostetler's site is built, and how it runs as a container on Azure with infrastructure as code, a GitHub Actions pipeline, and monitoring.">
   <meta name="theme-color" content="#0e1319">
   <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/glenn.css">
@@ -39,7 +39,7 @@
       <div class="wrap">
         <p class="eyebrow">Behind the scenes</p>
         <h1>How this site is built</h1>
-        <p class="lede">I originally built this site to force myself to learn Kubernetes. That worked, but a cluster is a lot to run for a personal site. So I'm rebuilding the hosting around containers on Azure, using the services and practices I most want to know well. This page is honest about what's finished and what's still a plan.</p>
+        <p class="lede">I originally built this site to force myself to learn Kubernetes. That worked, but a cluster is a lot to run for a personal site. So I rebuilt the hosting around containers on Azure, using the services and practices I most want to know well. This page is honest about what is finished and what is still a plan.</p>
       </div>
     </div>
 
@@ -58,94 +58,36 @@
         <ul class="steps">
           <li><span class="status done">Done</span><strong>A fresh, accessible front end.</strong>
             <p>Plain HTML and CSS with no front-end framework and no build step. It's built with keyboard use, screen readers, and reduced-motion settings in mind, and it loads quickly.</p></li>
-          <li><span class="status done">Done</span><strong>Current runtime.</strong>
-            <p>The site runs on ASP.NET Core 10, upgraded from .NET Core 3.1.</p></li>
-          <li><span class="status done">Done</span><strong>One source for my resume.</strong>
-            <p>The resume files are maintained in one folder and copied into the site automatically by the build, so the site never serves a stale copy.</p></li>
-          <li><span class="status next">Next</span><strong>Containerize it.</strong>
-            <p>A multi-stage Dockerfile that builds the site and produces a small runtime image.</p></li>
-          <li><span class="status next">Next</span><strong>Azure Container Registry and Azure Container Apps.</strong>
-            <p>Store the image in a registry and run it on Container Apps: HTTPS, a custom domain, and scale-to-zero so it costs almost nothing when nobody is visiting.</p></li>
-          <li><span class="status next">Next</span><strong>Infrastructure as code with Bicep.</strong>
-            <p>Every Azure resource defined in code, so the whole environment can be rebuilt, or torn down, from a repository.</p></li>
-          <li><span class="status next">Next</span><strong>A build and release pipeline.</strong>
-            <p>A YAML pipeline that builds the image, scans it for vulnerabilities, pushes it to the registry, and deploys it on every change. The source code and its history (back to 2020) also need to move from Azure DevOps Git to GitHub.</p></li>
-          <li><span class="status later">Later</span><strong>Managed identity and Key Vault.</strong>
-            <p>No passwords in code: the site authenticates to other Azure services with its own identity, and any secrets live in Key Vault.</p></li>
-          <li><span class="status later">Later</span><strong>Monitoring.</strong>
-            <p>Application Insights with a KQL dashboard for availability, errors, and performance.</p></li>
+          <li><span class="status done">Done</span><strong>Current runtime and a container.</strong>
+            <p>ASP.NET Core 10 (upgraded from .NET Core 3.1) in a small multi-stage Docker image that runs as a non-root user.</p></li>
+          <li><span class="status done">Done</span><strong>Azure Container Apps and Container Registry.</strong>
+            <p>The image is built in Azure Container Registry and runs on Container Apps with HTTPS and scale-to-zero, so it costs almost nothing when nobody is visiting. A budget alert watches the subscription.</p></li>
+          <li><span class="status done">Done</span><strong>Infrastructure as code with Bicep.</strong>
+            <p>One template defines every Azure resource for both environments, with a small parameter file for each. The custom domain and its free managed certificate are in the same template.</p></li>
+          <li><span class="status done">Done</span><strong>GitHub and a build-and-release pipeline.</strong>
+            <p>GitHub Actions builds the image once, deploys it to dev automatically, then waits for my approval before promoting the same image to prod. Pull requests are required for main, and Dependabot keeps dependencies current.</p></li>
+          <li><span class="status done">Done</span><strong>No stored passwords.</strong>
+            <p>The pipeline signs in to Azure with short-lived OIDC tokens, and the app pulls its image with a managed identity that can only read from the registry.</p></li>
+          <li><span class="status next">Next</span><strong>Monitoring.</strong>
+            <p>Application Insights with a KQL dashboard for availability, errors, and performance. Logs already flow to Log Analytics.</p></li>
+          <li><span class="status later">Later</span><strong>Key Vault.</strong>
+            <p>Only if the site ever needs a secret. Today there are none to store.</p></li>
           <li><span class="status later">Later</span><strong>A real contact form.</strong>
             <p>The old form depended on PHP, which doesn't run here. The replacement would be an Azure Function that queues messages through Service Bus and emails me.</p></li>
           <li><span class="status later">Later</span><strong>An "Ask Glenn" assistant.</strong>
-            <p>A chat box that answers questions about my experience using vector search over my resume and project write-ups (Cosmos DB or PostgreSQL with pgvector), with Redis for caching and rate limits and a firm spending cap.</p></li>
+            <p>A chat box that answers questions about my experience using vector search over my resume and project write-ups, with Redis for caching and rate limits and a firm spending cap.</p></li>
         </ul>
       </div>
     </section>
 
     <section>
       <div class="wrap">
-        <h2>The target design</h2>
-        <p class="lede">Solid outlines are in place; dashed outlines are planned.</p>
-        <div class="diagram">
-          <svg viewBox="0 0 910 380" role="img" aria-labelledby="diag-title diag-desc">
-            <title id="diag-title">Planned hosting architecture</title>
-            <desc id="diag-desc">Site code goes through a YAML pipeline into Azure Container Registry, then runs on Azure Container Apps and serves visitors over HTTPS. Bicep defines the infrastructure. Key Vault with managed identity, Application Insights, a contact-form function with Service Bus, and an assistant backed by vector search and Redis connect to the container app.</desc>
-            <defs>
-              <marker id="head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M0 0 L10 5 L0 10 z" fill="#a3b3c2"/>
-              </marker>
-            </defs>
-
-            <rect class="box" x="10" y="30" width="150" height="76" rx="12"/>
-            <text x="85" y="62" text-anchor="middle">Site code</text>
-            <text class="sub" x="85" y="82" text-anchor="middle">ASP.NET Core 10</text>
-
-            <rect class="box planned" x="190" y="30" width="150" height="76" rx="12"/>
-            <text x="265" y="62" text-anchor="middle">YAML pipeline</text>
-            <text class="sub" x="265" y="82" text-anchor="middle">build, scan, deploy</text>
-
-            <rect class="box planned" x="370" y="30" width="150" height="76" rx="12"/>
-            <text x="445" y="62" text-anchor="middle">Container Registry</text>
-            <text class="sub" x="445" y="82" text-anchor="middle">image storage</text>
-
-            <rect class="box planned" x="550" y="30" width="170" height="76" rx="12"/>
-            <text x="635" y="62" text-anchor="middle">Container Apps</text>
-            <text class="sub" x="635" y="82" text-anchor="middle">HTTPS, scale to zero</text>
-
-            <rect class="box planned" x="750" y="30" width="150" height="76" rx="12"/>
-            <text x="825" y="62" text-anchor="middle">Visitors</text>
-            <text class="sub" x="825" y="82" text-anchor="middle">custom domain</text>
-
-            <path class="arrow" d="M160 68 H188"/>
-            <path class="arrow" d="M340 68 H368"/>
-            <path class="arrow" d="M520 68 H548"/>
-            <path class="arrow" d="M720 68 H748"/>
-
-            <rect class="box planned" x="190" y="170" width="150" height="76" rx="12"/>
-            <text x="265" y="202" text-anchor="middle">Bicep</text>
-            <text class="sub" x="265" y="222" text-anchor="middle">infrastructure as code</text>
-            <path class="arrow" d="M265 106 V168"/>
-
-            <rect class="box planned" x="460" y="170" width="170" height="76" rx="12"/>
-            <text x="545" y="202" text-anchor="middle">Key Vault</text>
-            <text class="sub" x="545" y="222" text-anchor="middle">+ managed identity</text>
-            <path class="arrow" d="M580 168 L612 108"/>
-
-            <rect class="box planned" x="660" y="170" width="150" height="76" rx="12"/>
-            <text x="735" y="202" text-anchor="middle">App Insights</text>
-            <text class="sub" x="735" y="222" text-anchor="middle">KQL dashboard</text>
-            <path class="arrow" d="M705 168 L665 108"/>
-
-            <rect class="box planned" x="190" y="290" width="200" height="76" rx="12"/>
-            <text x="290" y="322" text-anchor="middle">Contact form</text>
-            <text class="sub" x="290" y="342" text-anchor="middle">Function + Service Bus</text>
-
-            <rect class="box planned" x="460" y="290" width="270" height="76" rx="12"/>
-            <text x="595" y="322" text-anchor="middle">"Ask Glenn" assistant</text>
-            <text class="sub" x="595" y="342" text-anchor="middle">vector search + Redis cache</text>
-          </svg>
+        <h2>The architecture</h2>
+        <p class="lede">Solid outlines are deployed; dashed outlines are planned.</p>
+        <div class="diagram light">
+          <a href="img/architecture.svg"><img src="img/architecture.svg" width="1879" height="986" alt="Architecture diagram. A developer's pull request is merged to main in a public GitHub repository, which starts a GitHub Actions pipeline. The pipeline signs in to Azure through Microsoft Entra ID with an OIDC token, builds the image in the dev Azure Container Registry, and deploys with Bicep to the dev resource group in Central US. After a reviewer approves, the same image is copied to the prod registry and deployed to the prod resource group in West US 3. Each resource group has a registry, a managed identity with pull access, a Container Apps environment running the app, and a Log Analytics workspace. Visitors reach the prod app over HTTPS through Cloudflare DNS with a free managed certificate. Application Insights and Key Vault are planned."></a>
         </div>
-        <p class="legend">The contact form and the assistant are separate add-ons to the site, and the last pieces I plan to build. The assistant will only go live once spending limits are in place.</p>
+        <p class="legend">Select the diagram to open it full size. The contact form and the assistant are separate add-ons, and the last pieces I plan to build. The assistant will only go live once spending limits are in place.</p>
       </div>
     </section>
 
@@ -155,9 +97,9 @@
         <ul>
           <li><strong>Container Apps instead of Kubernetes.</strong> It runs the same kind of container with a fraction of the operational work, and it can scale to zero. A site with a handful of visitors shouldn't pay for an idle cluster.</li>
           <li><strong>Bicep for everything.</strong> If it isn't in code, it can't be reviewed, repeated, or safely deleted.</li>
-          <li><strong>Scanning in the pipeline.</strong> Security checks that fail the build keep problems from shipping. It's the same habit I use at work.</li>
+          <li><strong>Approval before prod.</strong> The same image that passed in dev is promoted, never rebuilt, and a human approves the step. It's the same habit I use at work.</li>
           <li><strong>Managed identity, not passwords.</strong> The fewer secrets there are, the fewer can leak.</li>
-          <li><strong>Monitoring from day one.</strong> You can't run what you can't see.</li>
+          <li><strong>Monitoring.</strong> You can't run what you can't see, so logs are collected already and a dashboard is next.</li>
         </ul>
         <p>It's also my study project for Microsoft's AI-200 exam (Azure AI Cloud Developer): containers, data services, messaging, and security and monitoring are all on that list, and building something real is the best way I know to learn them.</p>
         <p><a href="index.html">&larr; Back to the home page</a></p>

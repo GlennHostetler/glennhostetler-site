@@ -271,3 +271,5 @@ section.alt .card { background: var(--bg); }
   .logo-marquee { -webkit-mask-image: none; mask-image: none; }
   .marquee-controls { display: none !important; }
 }
+.diagram.light { background: #ffffff; padding: 8px; }
+.diagram.light img { width: 100%; height: auto; display: block; }

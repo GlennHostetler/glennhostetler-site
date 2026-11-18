@@ -341,3 +341,9 @@ healthchecksdb
 
 Archive/
 Resume/NOTES.md
+
+# ReportGenerator HTML coverage output
+coverage-report/
+
+# Private working notes (contains unverified resume details; keep out of the public repo)
+docs/NOTES.md

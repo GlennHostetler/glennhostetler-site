@@ -13,6 +13,12 @@ updates:
     schedule:
       interval: weekly
 
+  # NuGet packages for the test project
+  - package-ecosystem: nuget
+    directory: /tests/GlennSite.Tests
+    schedule:
+      interval: weekly
+
   # Base images in the Dockerfile (.NET SDK and runtime)
   - package-ecosystem: docker
     directory: /GlennSite

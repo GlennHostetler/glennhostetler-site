@@ -1,0 +1,46 @@
+name: ci
+
+# Runs on every pull request, and on demand. Deliberately has no "paths" filter:
+# a required check that is skipped on some pull requests would block merging them.
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Read-only: CI never needs to sign in to Azure or write to the repository.
+permissions:
+  contents: read
+
+# A newer push to the same pull request replaces the older, now-pointless run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build and test
+        run: dotnet test GlennSite.sln --configuration Release
+
+  bicep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The Azure CLI on GitHub's runners includes Bicep. No Azure sign-in is needed to compile.
+      - name: Compile the template (catches syntax and type errors)
+        run: az bicep build --file infra/main.bicep --stdout > /dev/null
+
+      - name: Compile both parameter files
+        run: |
+          az bicep build-params --file infra/dev.bicepparam --stdout > /dev/null
+          az bicep build-params --file infra/prod.bicepparam --stdout > /dev/null
+
+      - name: Lint the template
+        run: az bicep lint --file infra/main.bicep

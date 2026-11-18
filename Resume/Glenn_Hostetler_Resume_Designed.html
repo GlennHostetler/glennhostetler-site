@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glenn Hostetler - Resume</title>
+<style>
+  @page { size: 8.5in 11in; margin: 0; }
+  :root { --accent: #0b6fa4; --ink: #1f2937; --muted: #6b7280; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", Calibri, Arial, sans-serif; color: var(--ink); font-size: 9.6pt; line-height: 1.3; }
+  .page { width: 8.5in; height: 11in; padding: 0.45in 0.55in; display: grid; grid-template-columns: 1fr 2.35in; column-gap: 0.4in; overflow: hidden; }
+  h1 { margin: 0; font-size: 31pt; line-height: 1.05; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+  .tag { margin: 4px 0 0; color: var(--muted); font-size: 10pt; max-width: 4.4in; }
+  .links { margin: 5px 0 0; font-size: 9pt; }
+  .links a { color: var(--accent); text-decoration: none; }
+  h2 { margin: 12px 0 5px; font-size: 12.5pt; color: var(--accent); font-weight: 600; }
+  .side h2:first-child { margin-top: 0; }
+  .job { margin: 7px 0 3px; }
+  .job .role { font-weight: 600; }
+  .job .org { font-weight: 700; }
+  .job .dates { color: var(--muted); font-size: 8.3pt; margin-left: 6px; white-space: nowrap; }
+  ul { margin: 2px 0 4px; padding-left: 16px; }
+  li { margin: 0 0 2.5px; }
+  li::marker { color: var(--accent); }
+  .side { padding-top: 0.1in; }
+  .side h3 { margin: 9px 0 1px; font-size: 9.4pt; font-weight: 700; }
+  .side p { margin: 0; font-size: 9pt; color: #374151; }
+  .earlier p { margin: 0 0 4px; font-size: 9pt; }
+  .earlier .dates { color: var(--muted); font-size: 8.3pt; }
+  .pub p { margin: 0 0 4px; font-size: 8.8pt; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="main">
+    <h1>Glenn Hostetler</h1>
+    <p class="tag">Cloud platform and integration engineer: Azure, secure and reliable delivery, and technical planning.</p>
+    <p class="links"><a href="mailto:glennhostetler@gmail.com">glennhostetler@gmail.com</a><br><a href="https://www.linkedin.com/in/glennhostetler/">linkedin.com/in/glennhostetler</a> &middot; <a href="https://glennhostetler.com">glennhostetler.com</a></p>
+
+    <h2>Summary</h2>
+    <p style="margin:0">Nearly three decades of experience, including 15+ years building data-exchange systems for healthcare and public health. I design, build, and secure reliable systems on Azure, and I turn complex goals into a clear plan of work. I'm high energy and easy to work with.</p>
+
+    <h2>Experience</h2>
+
+    <div class="job"><span class="role">Team Lead</span> &middot; <span class="org">InductiveHealth / Envision Technology</span><span class="dates">Jul 2021 &mdash; Present</span></div>
+    <ul>
+      <li>Promoted from Senior Developer to Principal Developer to Team Lead. Planned the team's work as architect and ticket-backlog owner: wrote and sequenced about 200 tickets in 2026, including a 13-part partner-onboarding plan and a "best record" algorithm investigation.</li>
+      <li>Built the application side of a message-log redesign (SQL Server to OpenSearch): CQRS read/write paths, a guaranteed-delivery queue with enforced ordering, verification, rerun and resend jobs, and an accessible Bootstrap 5 search page. Rolled out to all sites in stages with feature flags.</li>
+      <li>Cleared nearly all Snyk and code-scanning findings (XSS, open redirects, TLS, encryption, dependencies) and added pipeline scans that fail on critical findings. This closed holes that automated and AI-assisted attackers probe; my method became the model for other teams to follow.</li>
+      <li>Diagnosed production and staging defects (race conditions, duplicate processing, timestamp drift, slow queries); set up monthly partitioning, archiving, and purging for high-volume log tables; investigated database and Redis performance.</li>
+      <li>Built Azure DevOps YAML pipelines and Bicep, plus k6 load tests reporting to Application Insights; created KQL workbooks for health checks, data integrity, and search metrics.</li>
+      <li>Helped restructure a legacy .NET Framework platform: extracted a major component into its own repository and pipelines; removed obsolete code, including logic embedded in the database.</li>
+      <li>Maintained CDC data exchange and reporting jobs rolled out to every jurisdiction; built import tools, including a third-party address-validation job, that convert state data files to HL7.</li>
+      <li>Wrote a container (Azure Container Instances, managed identity, Key Vault) that resends missed logs; maintained Logstash/OpenSearch configuration; trained new employees; completed Manager Method Training.</li>
+    </ul>
+
+    <div class="job"><span class="role">Senior Solutions Engineer</span> &middot; <span class="org">Deloitte</span><span class="dates">2011 &mdash; Jul 2021</span></div>
+    <ul>
+      <li>Delivered integration interfaces and tools (C#, JavaScript, SQL Server, REST, SOAP) for hospital chains; did all code and architecture reviews; coordinated hundreds of VMs running C# scripts against hospital systems.</li>
+    </ul>
+
+    <h2>Earlier Experience</h2>
+    <div class="earlier">
+      <p><strong>Software Consultant</strong> &middot; National Cancer Institute <span class="dates">2010 &mdash; 2011</span></p>
+      <p><strong>Business Analyst, PM, Architect</strong> &middot; Northrop Grumman <span class="dates">2008 &mdash; 2010</span></p>
+      <p><strong>Contract Consultant (Architect, PM)</strong> &middot; IBM <span class="dates">2000 &mdash; 2008</span></p>
+      <p><strong>Co-founder, Solutions Architect and Developer</strong> &middot; Elite Systems <span class="dates">1998 &mdash; 2000</span><br>Co-founded a 10-person software consulting company with strong revenue throughout its life.</p>
+    </div>
+  </div>
+
+  <div class="side">
+    <h2>Skills</h2>
+    <h3>Cloud &amp; Azure</h3>
+    <p>App Service, VMs, Container Instances, Docker, Kubernetes (working knowledge), Application Insights, Grafana, Key Vault, Azure DevOps, OpenSearch, Redis</p>
+    <h3>Planning &amp; Architecture</h3>
+    <p>Requirements and ticket-backlog planning, solution architecture, task sequencing, code and architecture reviews, mentoring</p>
+    <h3>Security</h3>
+    <p>Snyk and code-scan remediation, XSS, open-redirect, and TLS hardening, security pipelines, secrets management (Key Vault, managed identity), protection against automated and AI-assisted attacks</p>
+    <h3>DevOps</h3>
+    <p>YAML pipelines, Bicep, release automation, KQL dashboards, load testing, code coverage</p>
+    <h3>Development</h3>
+    <p>C#/.NET, MVC, JavaScript, Bootstrap 5, HTML/CSS, SQL Server, accessibility (Section 508)</p>
+    <h3>Reliability &amp; Data</h3>
+    <p>Production troubleshooting, guaranteed-delivery design, feature flags and staged rollouts, CQRS, database partitioning and archiving</p>
+    <h3>Integration</h3>
+    <p>REST, SOAP, third-party APIs, data conversion, HL7</p>
+
+    <h2>Education</h2>
+    <h3>University of Colorado, Boulder</h3>
+    <p>M.S. Software Engineering<br>B.S. Computer Science</p>
+    <h3>Certifications</h3>
+    <p>Azure Developer Associate (AZ-204), Dec 2025<br>Preparing for AI-200 (Azure AI Cloud Developer)<br>PMP, 2009<br>Sun Certified Java Developer, 2001</p>
+
+    <h2>Publications</h2>
+    <div class="pub">
+      <p><strong>Web Service and SOA Technologies</strong>, Amazon, 2009</p>
+      <p><strong>Difficult PMP Exam Questions</strong>, Amazon, 2010</p>
+      <p><strong>IBM eServer and Oracle EnterpriseOne Technology Foundation</strong>, IBM Redbooks, 2005</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

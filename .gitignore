@@ -341,3 +341,7 @@ healthchecksdb
 
 Archive/
 Resume/NOTES.md
+
+# ReportGenerator HTML coverage output
+coverage-report/
+

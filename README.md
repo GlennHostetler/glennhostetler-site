@@ -21,6 +21,9 @@ merge to main -> sign in to Azure with OIDC (no stored passwords)
 | `GlennSite/Dockerfile` | Multi-stage build (SDK image to build, ASP.NET runtime image to run), non-root, port 8080 |
 | `infra/` | Bicep for the registry, logging, managed identity, Container Apps environment, and app; one parameter file per environment |
 | `.github/workflows/deploy.yml` | The dev-to-prod pipeline |
+| `.github/workflows/ci.yml` | Checks on every pull request: integration tests, Bicep compile and lint |
+| `tests/` | xUnit integration tests that run the site in memory |
+| `docs/` | Architecture diagram, decision records, and runbooks (start at `docs/README.md`) |
 
 ## Run locally
 
